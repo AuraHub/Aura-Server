@@ -1,9 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"Aura-Server/controllers"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main(){
-	fmt.Println("Hello world 2")
+	r := gin.Default()
+
+	r.GET("/ping", controllers.Ping)
+	
+	r.Run(":3000")
 }
