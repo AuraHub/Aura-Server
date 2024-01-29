@@ -13,6 +13,9 @@ go get -u gorm.io/gorm
 ```bash
 go get github.com/githubnemo/CompileDaemon
 ```
+#### 4. GoDotEnv
+```bash
+go get github.com/joho/godotenv```
 
 ---
 ## Command to run
