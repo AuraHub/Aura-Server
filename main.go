@@ -10,9 +10,12 @@ import (
 func init(){
 	initializers.LoadEnvVariables()
 	initializers.ConnectToDB()
+	initializers.SyncDatabase()
 }
 
 func main(){
+	gin.SetMode(gin.DebugMode)
+
 	r := gin.Default()
 
 	r.GET("/ping", controllers.Ping)
