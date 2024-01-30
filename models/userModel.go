@@ -1,9 +1,8 @@
 package models
 
-import "gorm.io/gorm"
-
 type User struct {
-	gorm.Model
+	ID         uint `gorm:"primaryKey"`
+	Rooms []*Room `gorm:"many2many:user_rooms;"`
 	Name string
 	LastName string
 	Email string	`gorm:"unique"`
