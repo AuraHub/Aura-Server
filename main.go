@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func init(){
+func init() {
 	initializers.LoadEnvVariables()
 	initializers.ConnectToDB()
 
@@ -15,13 +15,13 @@ func init(){
 	// initializers.SyncDatabase()
 }
 
-func main(){
+func main() {
 	gin.SetMode(gin.DebugMode)
 
 	r := gin.Default()
 
 	r.GET("/ping", controllers.Ping)
 	r.GET("/syncdatabase", controllers.SyncDatabase)
-	
+
 	r.Run(":3000")
 }

@@ -7,13 +7,13 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB 
+var DB *gorm.DB
 
-func ConnectToDB(){
+func ConnectToDB() {
 	var err error
 	dsn := os.Getenv("DB_CREDENTIALS")
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil{
+	if err != nil {
 		panic("Couldn't connect to database")
 	}
 

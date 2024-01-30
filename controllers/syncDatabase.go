@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SyncDatabase(c *gin.Context){
+func SyncDatabase(c *gin.Context) {
 	initializers.SyncDatabase()
 
 	c.AbortWithStatus(200)
