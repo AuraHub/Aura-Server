@@ -1,11 +1,16 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Device struct {
-	ID              uint `gorm:"primaryKey"`
-	RoomID          uint
+	ID              uuid.UUID `gorm:"primaryKey;default:gen_random_uuid();type:uuid;"`
+	RoomID          uuid.UUID
 	Name            string
-	LastOnlineTime  time.Time
+	Online          bool
+	LastOnline      time.Time
 	AttributeValues []AttributeValue
 }

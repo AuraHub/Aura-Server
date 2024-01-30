@@ -5,9 +5,12 @@ import (
 )
 
 func SyncDatabase() {
-	DB.AutoMigrate(&models.User{})
-	DB.AutoMigrate(&models.Device{})
-	DB.AutoMigrate(&models.Room{})
-	DB.AutoMigrate(&models.Attribute{})
-	DB.AutoMigrate(&models.AttributeValue{})
+	DB.AutoMigrate(
+		&models.User{},
+		&models.Device{},
+		&models.Room{},
+		&models.Attribute{},
+		&models.AttributeValue{},
+	)
+
 }
