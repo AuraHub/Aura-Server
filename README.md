@@ -16,7 +16,12 @@ go get github.com/githubnemo/CompileDaemon
 ```
 #### 4. GoDotEnv
 ```bash
-go get github.com/joho/godotenv```
+go get github.com/joho/godotenv
+```
+#### 5. Google UUID
+```bash
+go get github.com/google/uuid
+```
 
 ---
 ## Command to run

@@ -1,19 +1,25 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 // Attribute model
 type Attribute struct {
-	ID              uint `gorm:"primaryKey"`
+	ID              uuid.UUID `gorm:"primaryKey;default:gen_random_uuid();type:uuid;"`
 	Name            string
 	AttributeValues []AttributeValue
+	CreatedAt       time.Time `gorm:"autoCreateTime"`
 }
 
 // AttributeValue model
 type AttributeValue struct {
-	ID          uint `gorm:"primaryKey"`
-	DeviceID    uint
-	AttributeID uint
+	ID          uuid.UUID `gorm:"primaryKey;default:gen_random_uuid();type:uuid;"`
 	Value       string
-	LastUpdate  time.Time
+	DeviceID    uuid.UUID
+	AttributeID uuid.UUID
+	CreatedAt   time.Time `gorm:"autoCreateTime"`
+	UpdatedAt   time.Time `gorm:"autoUpdateTime"`
 }
