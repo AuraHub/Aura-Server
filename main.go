@@ -10,7 +10,9 @@ import (
 func init(){
 	initializers.LoadEnvVariables()
 	initializers.ConnectToDB()
-	initializers.SyncDatabase()
+
+	// Uncoment when there is need to sync database
+	// initializers.SyncDatabase()
 }
 
 func main(){
@@ -19,6 +21,7 @@ func main(){
 	r := gin.Default()
 
 	r.GET("/ping", controllers.Ping)
+	r.GET("/syncdatabase", controllers.SyncDatabase)
 	
 	r.Run(":3000")
 }
