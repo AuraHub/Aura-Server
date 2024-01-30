@@ -1,8 +1,16 @@
 package models
 
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
 type Room struct {
-	ID      uint `gorm:"primaryKey"`
-	Name    string
-	Users   []*User `gorm:"many2many:user_rooms;"`
-	Devices []Device
+	ID        uuid.UUID `gorm:"primaryKey;default:gen_random_uuid();type:uuid;"`
+	Name      string
+	Devices   []Device
+	Users     []*User   `gorm:"many2many:user_rooms;"`
+	CreatedAt time.Time `gorm:"autoCreateTime"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 }
