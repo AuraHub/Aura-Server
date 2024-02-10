@@ -22,6 +22,7 @@ func main() {
 
 	r.GET("/ping", controllers.Ping)
 	r.GET("/syncdatabase", controllers.SyncDatabase)
+	r.POST("/signup", controllers.Signup)
 
 	r.Run(":3000")
 }
