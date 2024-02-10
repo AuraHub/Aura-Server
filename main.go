@@ -22,7 +22,10 @@ func main() {
 
 	r.GET("/ping", controllers.Ping)
 	r.GET("/syncdatabase", controllers.SyncDatabase)
+
+	// User routes
 	r.POST("/signup", controllers.Signup)
+	r.POST("/login", controllers.Login)
 
 	r.Run(":3000")
 }
