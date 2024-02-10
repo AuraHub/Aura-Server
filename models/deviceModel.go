@@ -13,4 +13,5 @@ type Device struct {
 	Online          bool
 	LastOnline      time.Time
 	AttributeValues []AttributeValue
+	Configured      bool `gorm:"default:false"`
 }

@@ -22,6 +22,14 @@ go get github.com/joho/godotenv
 ```bash
 go get github.com/google/uuid
 ```
+#### 6. JWT v5
+```bash
+go get -u github.com/golang-jwt/jwt/v5
+```
+#### 7. Crypto - Bcrypt
+```bash
+go get -u golang.org/x/crypto/bcrypt
+```
 
 ---
 ## Command to run
