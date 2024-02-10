@@ -122,6 +122,14 @@ func Login(c *gin.Context) {
 }
 
 func Validate(c *gin.Context) {
+	var user, _ = c.Get("user")
+
 	c.JSON(http.StatusOK, gin.H{
-		"message": "I'm logged in"})
+		"message": user})
+}
+
+func Logout(c *gin.Context) {
+	c.SetCookie("Authorization", "", -1, "", "", false, true)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully logged out"})
 }
