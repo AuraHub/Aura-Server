@@ -3,6 +3,7 @@ package main
 import (
 	"Aura-Server/controllers"
 	"Aura-Server/initializers"
+	"Aura-Server/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,6 +27,7 @@ func main() {
 	// User routes
 	r.POST("/signup", controllers.Signup)
 	r.POST("/login", controllers.Login)
+	r.GET("/validate", middleware.RequireAuth, controllers.Validate)
 
 	r.Run(":3000")
 }
