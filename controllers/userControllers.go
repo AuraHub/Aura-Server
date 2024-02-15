@@ -62,8 +62,6 @@ func Signup(c *gin.Context) {
 func Login(c *gin.Context) {
 	// Get the email/pass off req body
 	var body struct {
-		Name     string
-		LastName string
 		Email    string
 		Password string
 	}

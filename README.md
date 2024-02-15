@@ -1,5 +1,7 @@
 # Aura-Server
 
+##  [Link to Postman](https://www.postman.com/wiaderek/workspace/aurahub)
+
 ## Packages to install:
 #### 1. Gin Web Framework 
 ```bash
