@@ -9,7 +9,7 @@ import (
 // Attribute model
 type Attribute struct {
 	ID              uuid.UUID `gorm:"primaryKey;default:gen_random_uuid();type:uuid;"`
-	Name            string
+	Name            string    `gorm:"not null;"`
 	AttributeValues []AttributeValue
 	CreatedAt       time.Time `gorm:"autoCreateTime"`
 }
@@ -18,8 +18,8 @@ type Attribute struct {
 type AttributeValue struct {
 	ID          uuid.UUID `gorm:"primaryKey;default:gen_random_uuid();type:uuid;"`
 	Value       string
-	DeviceID    uuid.UUID
-	AttributeID uuid.UUID
+	DeviceID    uuid.UUID `gorm:"not null;"`
+	AttributeID uuid.UUID `gorm:"not null;"`
 	CreatedAt   time.Time `gorm:"autoCreateTime"`
 	UpdatedAt   time.Time `gorm:"autoUpdateTime"`
 }

@@ -8,7 +8,7 @@ import (
 
 type Room struct {
 	ID        uuid.UUID `gorm:"primaryKey;default:gen_random_uuid();type:uuid;"`
-	Name      string
+	Name      string    `gorm:"not null;"`
 	Devices   []Device
 	Users     []*User   `gorm:"many2many:user_rooms;"`
 	CreatedAt time.Time `gorm:"autoCreateTime"`
