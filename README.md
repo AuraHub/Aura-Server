@@ -10,6 +10,7 @@ go get -u github.com/gin-gonic/gin
 #### 2. Gorm 
 ```bash
 go get -u gorm.io/gorm
+
 go get -u gorm.io/driver/postgres
 ```
 #### 3. CompileDeamon
@@ -32,9 +33,16 @@ go get -u github.com/golang-jwt/jwt/v5
 ```bash
 go get -u golang.org/x/crypto/bcrypt
 ```
+#### 8. Eclipse Paho MQTT Go client
+```bash
+go get github.com/eclipse/paho.mqtt.golang
+
+go get github.com/gorilla/websocket
+go get golang.org/x/net/proxy
+```
 
 ---
-## Command to run
+## Command to run Gorm server
 ```bash
 ~/go/bin/CompileDaemon -command="./Aura-Server"
 ```

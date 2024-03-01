@@ -12,7 +12,9 @@ func init() {
 	initializers.LoadEnvVariables()
 	initializers.ConnectToDB()
 
-	// Uncoment when there is need to sync database
+	initializers.ConnectPaho()
+
+	// Uncomment when there is need to sync database
 	// initializers.SyncDatabase()
 }
 
