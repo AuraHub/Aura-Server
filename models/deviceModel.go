@@ -8,10 +8,11 @@ import (
 
 type Device struct {
 	ID              uuid.UUID `gorm:"primaryKey;default:gen_random_uuid();type:uuid;"`
-	RoomID          uuid.UUID `gorm:"not null;"`
-	Name            string    `gorm:"not null;"`
-	Online          bool      `gorm:"default:false;not null"`
-	LastOnline      time.Time
+	DeviceId        string    `gorm:"not null;unique;"`
+	Name            string
+	RoomID          uuid.UUID `gorm:"foreignKey:ID;default:null;"`
+	Online          bool      `gorm:"default:true;not null"`
+	LastOnline      time.Time `gorm:"autoCreateTime;not null;"`
 	AttributeValues []AttributeValue
 	Configured      bool `gorm:"default:false;"`
 }

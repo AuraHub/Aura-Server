@@ -9,7 +9,7 @@ import (
 // Attribute model
 type Attribute struct {
 	ID              uuid.UUID `gorm:"primaryKey;default:gen_random_uuid();type:uuid;"`
-	Name            string    `gorm:"not null;"`
+	Name            string    `gorm:"not null;unique;"`
 	AttributeValues []AttributeValue
 	CreatedAt       time.Time `gorm:"autoCreateTime"`
 }

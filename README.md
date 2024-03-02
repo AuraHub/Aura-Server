@@ -46,3 +46,10 @@ go get golang.org/x/net/proxy
 ```bash
 ~/go/bin/CompileDaemon -command="./Aura-Server"
 ```
+
+# Available attributes
+## Devices
+* OnOff
+* Brightness
+
+## Sensors
