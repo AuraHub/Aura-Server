@@ -2,6 +2,7 @@ package main
 
 import (
 	"Aura-Server/controllers"
+	"Aura-Server/handlers"
 	"Aura-Server/initializers"
 	"Aura-Server/middleware"
 
@@ -31,6 +32,9 @@ func main() {
 	r.POST("/login", controllers.Login)
 	r.GET("/validate", middleware.RequireAuth, controllers.Validate)
 	r.GET("/logout", controllers.Logout)
+
+	// Subscribes to MQTT topics
+	initializers.PahoConnection.Subscribe("setup", 0, handlers.SetupDevice)
 
 	r.Run(":3000")
 }
