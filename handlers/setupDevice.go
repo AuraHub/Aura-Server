@@ -43,10 +43,10 @@ func SetupDevice(c mqtt.Client, m mqtt.Message) {
 		// Create new record in database
 		newDevice := models.Device{DeviceId: setupData.DeviceId, AttributeValues: attributeValues}
 
-		resultDevices := initializers.DB.Create(&newDevice)
+		result := initializers.DB.Create(&newDevice)
 
-		if resultDevices.Error != nil {
-			panic(resultDevices.Error)
+		if result.Error != nil {
+			panic(result.Error)
 		}
 	}
 }

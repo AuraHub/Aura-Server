@@ -11,8 +11,8 @@ type Device struct {
 	DeviceId        string    `gorm:"not null;unique;"`
 	Name            string
 	RoomID          uuid.UUID `gorm:"foreignKey:ID;default:null;"`
-	Online          bool      `gorm:"default:true;not null"`
+	Online          bool      `gorm:"default:true;not null;"`
 	LastOnline      time.Time `gorm:"autoCreateTime;not null;"`
 	AttributeValues []AttributeValue
-	Configured      bool `gorm:"default:false;"`
+	Configured      bool `gorm:"default:false;not null;"`
 }
