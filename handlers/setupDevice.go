@@ -4,8 +4,6 @@ import (
 	"Aura-Server/initializers"
 	"Aura-Server/models"
 	"encoding/json"
-	"fmt"
-	"strings"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -17,12 +15,12 @@ type deviceSetup struct {
 }
 
 func SetupDevice(c mqtt.Client, m mqtt.Message) {
+	// Convert data to JSON
 	var setupData deviceSetup
 
 	err := json.Unmarshal(m.Payload(), &setupData)
 	if err != nil {
 		panic(err)
-
 	}
 
 	// Check if device exists in database
@@ -35,14 +33,14 @@ func SetupDevice(c mqtt.Client, m mqtt.Message) {
 			Updates(models.Device{Online: true, LastOnline: time.Now()})
 
 	} else {
-		// Create new record in database
-
+		// Create list of attributes to connect
 		var attributeValues []models.AttributeValue
 
 		for _, newAttributeName := range setupData.Attributes {
 			attributeValues = append(attributeValues, models.AttributeValue{DeviceID: device.ID, AttributeName: newAttributeName})
 		}
 
+		// Create new record in database
 		newDevice := models.Device{DeviceId: setupData.DeviceId, AttributeValues: attributeValues}
 
 		resultDevices := initializers.DB.Create(&newDevice)
@@ -50,8 +48,5 @@ func SetupDevice(c mqtt.Client, m mqtt.Message) {
 		if resultDevices.Error != nil {
 			panic(resultDevices.Error)
 		}
-
-		fmt.Println("Device id:", setupData.DeviceId)
-		fmt.Println("Attributes:", string(strings.Join(setupData.Attributes, ", ")))
 	}
 }

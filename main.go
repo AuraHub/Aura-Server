@@ -35,6 +35,7 @@ func main() {
 
 	// Subscribes to MQTT topics
 	initializers.PahoConnection.Subscribe("setup", 0, handlers.SetupDevice)
+	initializers.PahoConnection.Subscribe("returnPing", 0, handlers.ReturnedPing)
 
 	r.Run(":3000")
 }
