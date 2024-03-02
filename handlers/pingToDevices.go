@@ -31,6 +31,8 @@ func PingDevices() {
 	// Remove devices which didn't respond
 	initializers.DB.Model(&devices).
 		Updates(map[string]interface{}{"Online": false})
+
+	devices = nil
 }
 
 func ReturnedPing(c mqtt.Client, m mqtt.Message) {
@@ -44,7 +46,7 @@ func ReturnedPing(c mqtt.Client, m mqtt.Message) {
 
 	// Update status to online
 	var device models.Device
-	initializers.DB.First(&device, "device_id = ?", pingData.DeviceId).
+	initializers.DB.Model(&device).Where("device_id = ?", pingData.DeviceId).
 		Updates(models.Device{Online: true, LastOnline: time.Now()})
 
 	if len(devices) != 0 {
