@@ -5,6 +5,7 @@ import (
 	"Aura-Server/handlers"
 	"Aura-Server/initializers"
 	"Aura-Server/middleware"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,6 +37,22 @@ func main() {
 	// Subscribes to MQTT topics
 	initializers.PahoConnection.Subscribe("setup", 0, handlers.SetupDevice)
 	initializers.PahoConnection.Subscribe("returnPing", 0, handlers.ReturnedPing)
+
+	ticker := time.NewTicker(25 * time.Second)
+	quit := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+
+				handlers.PingDevices()
+
+			case <-quit:
+				ticker.Stop()
+				return
+			}
+		}
+	}()
 
 	r.Run(":3000")
 }

@@ -16,23 +16,25 @@ type devicePing struct {
 var devices []models.Device
 
 func PingDevices() {
-	result := initializers.DB.Find(&devices)
+	result := initializers.DB.Find(&devices).Where("online = ?", true)
 
-	if result.Error != nil {
-		panic(result.Error)
+	if len(devices) != 0 {
+		if result.Error != nil {
+			panic(result.Error)
+		}
+
+		// Send ping to devices
+		initializers.PahoConnection.Publish("ping", 0, false, "")
+
+		// Wait 5 seconds
+		time.Sleep(5 * time.Second)
+
+		// Remove devices which didn't respond
+		initializers.DB.Model(&devices).
+			Updates(map[string]interface{}{"Online": false})
+
+		devices = nil
 	}
-
-	// Send ping to devices
-	initializers.PahoConnection.Publish("ping", 0, false, "")
-
-	// Wait 5 seconds
-	time.Sleep(5 * time.Second)
-
-	// Remove devices which didn't respond
-	initializers.DB.Model(&devices).
-		Updates(map[string]interface{}{"Online": false})
-
-	devices = nil
 }
 
 func ReturnedPing(c mqtt.Client, m mqtt.Message) {
@@ -49,15 +51,17 @@ func ReturnedPing(c mqtt.Client, m mqtt.Message) {
 	initializers.DB.Model(&device).Where("device_id = ?", pingData.DeviceId).
 		Updates(models.Device{Online: true, LastOnline: time.Now()})
 
+	// Remove device from array
 	if len(devices) != 0 {
-		// Remove device from array
 		var index int
+
 		for n, x := range devices {
 			if x.DeviceId == device.DeviceId {
 				index = n
 				break
 			}
 		}
+
 		devices = append(devices[:index], devices[index+1:]...)
 	}
 }
