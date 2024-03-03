@@ -13,28 +13,21 @@ type devicePing struct {
 	DeviceId string `json:"deviceId"`
 }
 
-var devices []models.Device
-
 func PingDevices() {
-	result := initializers.DB.Find(&devices).Where("online = ?", true)
+	var devices []models.Device
 
-	if len(devices) != 0 {
-		if result.Error != nil {
-			panic(result.Error)
-		}
+	// Send ping to devices
+	initializers.PahoConnection.Publish("ping", 0, false, "")
 
-		// Send ping to devices
-		initializers.PahoConnection.Publish("ping", 0, false, "")
+	// Wait 3 seconds
+	time.Sleep(3 * time.Second)
 
-		// Wait 5 seconds
-		time.Sleep(5 * time.Second)
+	// Calculate the timestamp 3 seconds ago
+	fiveSecondsAgo := time.Now().Add(-3 * time.Second)
 
-		// Remove devices which didn't respond
-		initializers.DB.Model(&devices).
-			Updates(map[string]interface{}{"Online": false})
-
-		devices = nil
-	}
+	// Remove devices which didn't respond
+	initializers.DB.Model(&devices).Where("online = ? AND last_online <= ?", true, fiveSecondsAgo).
+		Updates(map[string]interface{}{"Online": false})
 }
 
 func ReturnedPing(c mqtt.Client, m mqtt.Message) {
@@ -50,18 +43,4 @@ func ReturnedPing(c mqtt.Client, m mqtt.Message) {
 	var device models.Device
 	initializers.DB.Model(&device).Where("device_id = ?", pingData.DeviceId).
 		Updates(models.Device{Online: true, LastOnline: time.Now()})
-
-	// Remove device from array
-	if len(devices) != 0 {
-		var index int
-
-		for n, x := range devices {
-			if x.DeviceId == device.DeviceId {
-				index = n
-				break
-			}
-		}
-
-		devices = append(devices[:index], devices[index+1:]...)
-	}
 }
