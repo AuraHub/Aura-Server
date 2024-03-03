@@ -2,6 +2,7 @@ package initializers
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -11,7 +12,7 @@ var PahoConnection mqtt.Client
 
 func ConnectPaho() {
 	opts := mqtt.NewClientOptions()
-	opts.AddBroker("127.0.0.1:3202")
+	opts.AddBroker(os.Getenv("BROKER_IP"))
 	opts.SetClientID("AuraHub")
 	opts.SetKeepAlive(2 * time.Second)
 	opts.SetDefaultPublishHandler(f)
