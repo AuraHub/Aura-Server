@@ -122,8 +122,7 @@ func Login(c *gin.Context) {
 func Validate(c *gin.Context) {
 	var user, _ = c.Get("user")
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": user})
+	c.JSON(http.StatusOK, user)
 }
 
 func Logout(c *gin.Context) {
