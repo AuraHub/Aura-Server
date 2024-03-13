@@ -38,6 +38,7 @@ func main() {
 	r.POST("/room", middleware.RequireAuth, controllers.NewRoom)
 
 	// Device routes
+	r.POST("/device", middleware.RequireAuth, controllers.ConfigureDevice)
 	r.DELETE("/device", middleware.RequireAuth, controllers.DeleteDevice)
 
 	// Subscribes to MQTT topics
