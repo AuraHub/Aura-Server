@@ -7,7 +7,36 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
+
+func GetDevice(c *gin.Context) {
+	id := c.Param("id")
+
+	var result *gorm.DB
+
+	var device []models.Device
+
+	if id == "" {
+		result = initializers.DB.Find(&device)
+	} else {
+		result = initializers.DB.First(&device, "id = ?", id)
+	}
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to fetch device",
+		})
+
+		return
+	}
+
+	if id == "" {
+		c.JSON(http.StatusOK, device)
+	} else {
+		c.JSON(http.StatusOK, device[0])
+	}
+}
 
 func DeleteDevice(c *gin.Context) {
 	// Get the id off req body
