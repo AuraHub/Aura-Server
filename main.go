@@ -34,6 +34,9 @@ func main() {
 	r.GET("/validate", middleware.RequireAuth, controllers.Validate)
 	r.GET("/logout", controllers.Logout)
 
+	// Room routes
+	r.POST("/room", middleware.RequireAuth, controllers.NewRoom)
+
 	// Subscribes to MQTT topics
 	initializers.PahoConnection.Subscribe("setup", 0, handlers.SetupDevice)
 	initializers.PahoConnection.Subscribe("returnPing", 0, handlers.ReturnedPing)
