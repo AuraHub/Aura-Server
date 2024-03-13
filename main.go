@@ -37,6 +37,9 @@ func main() {
 	// Room routes
 	r.POST("/room", middleware.RequireAuth, controllers.NewRoom)
 
+	// Device routes
+	r.DELETE("/device", middleware.RequireAuth, controllers.DeleteDevice)
+
 	// Subscribes to MQTT topics
 	initializers.PahoConnection.Subscribe("setup", 0, handlers.SetupDevice)
 	initializers.PahoConnection.Subscribe("returnPing", 0, handlers.ReturnedPing)
