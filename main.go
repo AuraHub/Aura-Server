@@ -41,6 +41,7 @@ func main() {
 	r.GET("/device", middleware.RequireAuth, controllers.GetDevice)
 	r.GET("/device/:id", middleware.RequireAuth, controllers.GetDevice)
 	r.POST("/device", middleware.RequireAuth, controllers.ConfigureDevice)
+	r.PUT("/device", middleware.RequireAuth, controllers.UpdateDevice)
 	r.DELETE("/device", middleware.RequireAuth, controllers.DeleteDevice)
 
 	// Subscribes to MQTT topics

@@ -38,6 +38,37 @@ func GetDevice(c *gin.Context) {
 	}
 }
 
+func UpdateDevice(c *gin.Context) {
+	// Get the vars off req body
+	var body struct {
+		ID     string
+		RoomID uuid.UUID
+		Name   string
+	}
+
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+
+		return
+	}
+
+	// var device models.Device
+	result := initializers.DB.Model(&models.Device{}).Where("id = ?", body.ID).
+		Updates(models.Device{Name: body.Name, RoomID: body.RoomID})
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to setup device",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully updated the device"})
+}
+
 func DeleteDevice(c *gin.Context) {
 	// Get the id off req body
 	var body struct {
