@@ -41,3 +41,32 @@ func NewRoom(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{})
 }
+
+func UpdateRoom(c *gin.Context) {
+	// Get the vars off req body
+	var body struct {
+		ID   string
+		Name string
+	}
+
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+
+		return
+	}
+
+	result := initializers.DB.Model(&models.Room{}).Where("id = ?", body.ID).
+		Updates(models.Room{Name: body.Name})
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to update room",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully updated the room"})
+}

@@ -54,13 +54,12 @@ func UpdateDevice(c *gin.Context) {
 		return
 	}
 
-	// var device models.Device
 	result := initializers.DB.Model(&models.Device{}).Where("id = ?", body.ID).
 		Updates(models.Device{Name: body.Name, RoomID: body.RoomID})
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to setup device",
+			"error": "Failed to update device",
 		})
 		return
 	}
