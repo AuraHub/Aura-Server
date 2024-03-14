@@ -70,3 +70,33 @@ func UpdateRoom(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully updated the room"})
 }
+
+func DeleteRoom(c *gin.Context) {
+	// Get the id off req body
+	var body struct {
+		ID string
+	}
+
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+
+		return
+	}
+
+	editResult := initializers.DB.Model(&models.Device{}).Where("room_id = ?", body.ID).
+		Updates(map[string]interface{}{"Configured": false, "RoomID": nil})
+
+	deleteResult := initializers.DB.Where("id = ?", body.ID).Delete(&models.Room{})
+
+	if editResult.Error != nil || deleteResult.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to delete room",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully deleted room"})
+}
