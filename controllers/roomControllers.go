@@ -7,8 +7,37 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
+
+func GetRoom(c *gin.Context) {
+	id := c.Param("id")
+
+	var result *gorm.DB
+
+	var room []models.Room
+
+	if id == "" {
+		result = initializers.DB.Find(&room)
+	} else {
+		result = initializers.DB.First(&room, "id = ?", id)
+	}
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to fetch room",
+		})
+
+		return
+	}
+
+	if id == "" {
+		c.JSON(http.StatusOK, room)
+	} else {
+		c.JSON(http.StatusOK, room[0])
+	}
+}
 
 func NewRoom(c *gin.Context) {
 	// Get the credentials off req body

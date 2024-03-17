@@ -36,6 +36,8 @@ func main() {
 	r.GET("/logout", controllers.Logout)
 
 	// Room routes
+	r.GET("/room", middleware.RequireAuth, controllers.GetRoom)
+	r.GET("/room/:id", middleware.RequireAuth, controllers.GetRoom)
 	r.POST("/room", middleware.RequireAuth, controllers.NewRoom)
 	r.PUT("/room", middleware.RequireAuth, controllers.UpdateRoom)
 	r.DELETE("/room", middleware.RequireAuth, controllers.DeleteRoom)
