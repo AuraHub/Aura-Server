@@ -19,9 +19,9 @@ func GetRoom(c *gin.Context) {
 	var room []models.Room
 
 	if id == "" {
-		result = initializers.DB.Find(&room)
+		result = initializers.DB.Preload("Devices.AttributeValues").Find(&room)
 	} else {
-		result = initializers.DB.First(&room, "id = ?", id)
+		result = initializers.DB.Preload("Devices.AttributeValues").First(&room, "id = ?", id)
 	}
 
 	if result.Error != nil {

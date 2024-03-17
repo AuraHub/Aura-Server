@@ -23,7 +23,7 @@ func RequireAuth(c *gin.Context) {
 	// Decode/validate it
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
 		return []byte(os.Getenv("JWT_SECRET")), nil
@@ -41,7 +41,9 @@ func RequireAuth(c *gin.Context) {
 
 		// Find the user with token sub
 		var user models.User
-		initializers.DB.First(&user, "ID = ?", claims["sub"])
+		initializers.DB.
+			Preload("CreatedRooms").
+			First(&user, "ID = ?", claims["sub"])
 
 		if user.Email == "" {
 			c.AbortWithStatus(http.StatusUnauthorized)

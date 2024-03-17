@@ -19,9 +19,9 @@ func GetDevice(c *gin.Context) {
 	var device []models.Device
 
 	if id == "" {
-		result = initializers.DB.Find(&device)
+		result = initializers.DB.Preload("AttributeValues").Find(&device)
 	} else {
-		result = initializers.DB.First(&device, "id = ?", id)
+		result = initializers.DB.Preload("AttributeValues").First(&device, "id = ?", id)
 	}
 
 	if result.Error != nil {
