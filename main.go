@@ -29,6 +29,7 @@ func main() {
 	r.GET("/syncdatabase", controllers.SyncDatabase)
 
 	// User routes
+	r.GET("/user", middleware.RequireAuth, controllers.GetUser)
 	r.POST("/signup", controllers.Signup)
 	r.POST("/login", controllers.Login)
 	r.GET("/validate", middleware.RequireAuth, controllers.Validate)

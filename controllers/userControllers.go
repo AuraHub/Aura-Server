@@ -137,3 +137,9 @@ func Logout(c *gin.Context) {
 		"message": "Successfully logged out",
 	})
 }
+
+func GetUser(c *gin.Context) {
+	var user, _ = c.Get("user")
+
+	c.JSON(http.StatusOK, user)
+}
