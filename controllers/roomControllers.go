@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"gorm.io/gorm/clause"
 )
 
 func NewRoom(c *gin.Context) {
@@ -39,13 +41,16 @@ func NewRoom(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully created new room",
+		"data":    room,
+	})
 }
 
 func UpdateRoom(c *gin.Context) {
 	// Get the vars off req body
 	var body struct {
-		ID   string
+		ID   uuid.UUID
 		Name string
 	}
 
@@ -56,8 +61,11 @@ func UpdateRoom(c *gin.Context) {
 
 		return
 	}
+	var room models.Room = models.Room{ID: body.ID}
 
-	result := initializers.DB.Model(&models.Room{}).Where("id = ?", body.ID).
+	result := initializers.DB.Model(&room).
+		Clauses(clause.Returning{}).
+		Where("id = ?", body.ID).
 		Updates(models.Room{Name: body.Name})
 
 	if result.Error != nil {
@@ -68,7 +76,9 @@ func UpdateRoom(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully updated the room"})
+		"message": "Successfully updated the room",
+		"data":    room,
+	})
 }
 
 func DeleteRoom(c *gin.Context) {
@@ -98,5 +108,6 @@ func DeleteRoom(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully deleted room"})
+		"message": "Successfully deleted room",
+	})
 }

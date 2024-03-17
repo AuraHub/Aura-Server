@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func GetDevice(c *gin.Context) {
@@ -54,7 +55,10 @@ func UpdateDevice(c *gin.Context) {
 		return
 	}
 
-	result := initializers.DB.Model(&models.Device{}).Where("id = ?", body.ID).
+	var device models.Device
+	result := initializers.DB.Model(&device).
+		Clauses(clause.Returning{}).
+		Where("id = ?", body.ID).
 		Updates(models.Device{Name: body.Name, RoomID: body.RoomID})
 
 	if result.Error != nil {
@@ -65,7 +69,9 @@ func UpdateDevice(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully updated the device"})
+		"message": "Successfully updated the device",
+		"data":    device,
+	})
 }
 
 func DeleteDevice(c *gin.Context) {
@@ -111,8 +117,10 @@ func ConfigureDevice(c *gin.Context) {
 		return
 	}
 
-	// var device models.Device
-	result := initializers.DB.Model(&models.Device{}).Where("id = ?", body.ID).
+	var device models.Device
+	result := initializers.DB.Model(&device).
+		Clauses(clause.Returning{}).
+		Where("id = ?", body.ID).
 		Updates(models.Device{Configured: true, Name: body.Name, RoomID: body.RoomID})
 
 	if result.Error != nil {
@@ -123,5 +131,7 @@ func ConfigureDevice(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully setup device"})
+		"message": "Successfully setup device",
+		"data":    device,
+	})
 }
