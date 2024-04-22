@@ -3,6 +3,7 @@ package controllers
 import (
 	"Aura-Server/initializers"
 	"Aura-Server/models"
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -10,6 +11,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+
+	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -42,21 +45,25 @@ func Signup(c *gin.Context) {
 
 	// Create the user
 	user := models.User{
-		Name:     body.Name,
-		LastName: body.LastName,
-		Email:    body.Email,
-		Password: string(hash),
+		Name:      body.Name,
+		LastName:  body.LastName,
+		Email:     body.Email,
+		Password:  string(hash),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
-	result := initializers.DB.Create(&user)
 
-	if result.Error != nil {
+	result, err := initializers.Database.Collection("users").InsertOne(context.TODO(), user)
+
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to create user",
+			"user":  user,
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, result)
 }
 
 func Login(c *gin.Context) {
@@ -75,8 +82,9 @@ func Login(c *gin.Context) {
 	}
 
 	// Look up requested user
+	filter := bson.D{{"email", body.Email}}
 	var user models.User
-	initializers.DB.First(&user, "email = ?", body.Email)
+	initializers.Database.Collection("users").FindOne(context.TODO(), filter).Decode(&user)
 
 	if user.Email == "" {
 		c.JSON(http.StatusBadRequest, gin.H{

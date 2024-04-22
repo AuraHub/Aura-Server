@@ -3,16 +3,15 @@ package models
 import (
 	"time"
 
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type User struct {
-	ID           uuid.UUID `gorm:"primaryKey;default:gen_random_uuid();type:uuid;"`
-	Name         string    `gorm:"not null;"`
-	LastName     string    `gorm:"not null;"`
-	Email        string    `gorm:"unique;not null;"`
-	Password     string    `gorm:"not null;"`
-	CreatedRooms []Room    `gorm:"foreignKey:CreatedBy;"`
-	CreatedAt    time.Time `gorm:"autoCreateTime"`
-	UpdatedAt    time.Time `gorm:"autoUpdateTime"`
+	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	Name      string             `bson:"name,omitempty"`
+	LastName  string             `bson:"last_name,omitempty"`
+	Email     string             `bson:"email,omitempty"`
+	Password  string             `bson:"password,omitempty"`
+	CreatedAt time.Time          `bson:"created_at,omitempty"`
+	UpdatedAt time.Time          `bson:"updated_at,omitempty"`
 }
