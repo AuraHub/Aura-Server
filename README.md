@@ -7,11 +7,9 @@
 ```bash
 go get -u github.com/gin-gonic/gin
 ```
-#### 2. Gorm 
+#### 2. MongoDB 
 ```bash
-go get -u gorm.io/gorm
-
-go get -u gorm.io/driver/postgres
+go get go.mongodb.org/mongo-driver/mongo
 ```
 #### 3. CompileDeamon
 ```bash

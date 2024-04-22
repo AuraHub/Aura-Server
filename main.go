@@ -15,9 +15,6 @@ func init() {
 	initializers.ConnectToDB()
 
 	initializers.ConnectPaho()
-
-	// Uncomment when there is need to sync database
-	// initializers.SyncDatabase()
 }
 
 func main() {
@@ -26,7 +23,6 @@ func main() {
 	r := gin.Default()
 
 	r.GET("/ping", controllers.Ping)
-	r.GET("/syncdatabase", controllers.SyncDatabase)
 
 	// User routes
 	r.GET("/user", middleware.RequireAuth, controllers.GetUser)
