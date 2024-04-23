@@ -46,7 +46,7 @@ func RequireAuth(c *gin.Context) {
 		objectId, _ := primitive.ObjectIDFromHex(claims["sub"].(string))
 
 		// Find the user with token sub
-		filter := bson.D{{"_id", objectId}}
+		filter := bson.D{{Key: "_id", Value: objectId}}
 		var user models.User
 		initializers.Database.Collection("users").FindOne(context.TODO(), filter).
 			Decode(&user)

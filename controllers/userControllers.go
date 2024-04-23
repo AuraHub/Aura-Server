@@ -82,7 +82,7 @@ func Login(c *gin.Context) {
 	}
 
 	// Look up requested user
-	filter := bson.D{{"email", body.Email}}
+	filter := bson.D{{Key: "email", Value: body.Email}}
 	var user models.User
 	initializers.Database.Collection("users").FindOne(context.TODO(), filter).Decode(&user)
 
