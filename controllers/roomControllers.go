@@ -15,8 +15,6 @@ import (
 
 func GetRoom(c *gin.Context) {
 	id := c.Param("id")
-	println(id)
-	var room models.Room
 
 	if id == "" {
 		cursor, err := initializers.Database.Collection("rooms").Find(context.TODO(), bson.D{})
@@ -24,9 +22,10 @@ func GetRoom(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Failed to read body",
 			})
+			return
 		}
 
-		var rooms []models.Room
+		var rooms []models.Room = []models.Room{}
 
 		if err = cursor.All(context.TODO(), &rooms); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -40,10 +39,19 @@ func GetRoom(c *gin.Context) {
 		c.JSON(http.StatusOK, rooms)
 
 	} else {
+		var room models.Room
+
 		objectId, _ := primitive.ObjectIDFromHex(id)
 		filter := bson.D{{Key: "_id", Value: objectId}}
 
-		initializers.Database.Collection("rooms").FindOne(context.TODO(), filter).Decode(&room)
+		err := initializers.Database.Collection("rooms").FindOne(context.TODO(), filter).Decode(&room)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Room cannot be found",
+			})
+			return
+		}
 
 		c.JSON(http.StatusOK, room)
 
@@ -63,7 +71,6 @@ func NewRoom(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
-
 		return
 	}
 
@@ -101,7 +108,6 @@ func UpdateRoom(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
-
 		return
 	}
 
@@ -134,7 +140,6 @@ func DeleteRoom(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to read body",
 		})
-
 		return
 	}
 
