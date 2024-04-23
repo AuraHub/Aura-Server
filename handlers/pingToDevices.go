@@ -8,7 +8,6 @@ import (
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type devicePing struct {
@@ -48,8 +47,7 @@ func ReturnedPing(c mqtt.Client, m mqtt.Message) {
 	}
 
 	// Update status to online
-	objectId, _ := primitive.ObjectIDFromHex(pingData.DeviceId)
-	filter := bson.D{{Key: "_id", Value: objectId}}
+	filter := bson.D{{Key: "device_id", Value: pingData.DeviceId}}
 	update := bson.D{
 		{
 			Key:   "$set",

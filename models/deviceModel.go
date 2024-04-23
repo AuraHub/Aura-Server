@@ -3,16 +3,23 @@ package models
 import (
 	"time"
 
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Device struct {
-	ID              uuid.UUID `gorm:"primaryKey;default:gen_random_uuid();type:uuid;"`
-	DeviceId        string    `gorm:"not null;unique;"`
-	Name            string
-	RoomID          uuid.UUID `gorm:"foreignKey:ID;default:null;"`
-	Online          bool      `gorm:"default:true;not null;"`
-	LastOnline      time.Time `gorm:"autoCreateTime;not null;"`
-	AttributeValues []AttributeValue
-	Configured      bool `gorm:"default:false;not null;"`
+	ID         primitive.ObjectID   `bson:"_id,omitempty"`
+	DeviceId   string               `bson:"device_id,omitempty"`
+	Name       string               `bson:"name"`
+	RoomID     *primitive.ObjectID  `bson:"room_id"`
+	Online     bool                 `bson:"online,omitempty"`
+	LastOnline time.Time            `bson:"last_online,omitempty"`
+	Configured bool                 `bson:"configured,omitempty"`
+	Attributes map[string]Attribute `bson:"attributes"`
+	CreatedAt  time.Time            `bson:"created_at,omitempty"`
+	UpdatedAt  time.Time            `bson:"updated_at,omitempty"`
+}
+
+type Attribute struct {
+	Value     string    `bson:"value"`
+	UpdatedAt time.Time `bson:"updated_at,omitempty"`
 }
