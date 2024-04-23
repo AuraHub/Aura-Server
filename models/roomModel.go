@@ -3,14 +3,14 @@ package models
 import (
 	"time"
 
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Room struct {
-	ID        uuid.UUID `gorm:"primaryKey;default:gen_random_uuid();type:uuid;"`
-	Name      string    `gorm:"not null;"`
-	Devices   []Device  `gorm:"foreignKey:RoomID"`
-	CreatedBy uuid.UUID `gorm:"type:uuid;"`
-	CreatedAt time.Time `gorm:"autoCreateTime"`
-	UpdatedAt time.Time `gorm:"autoUpdateTime"`
+	ID        primitive.ObjectID   `bson:"_id,omitempty"`
+	Name      string               `bson:"name,omitempty"`
+	Devices   []primitive.ObjectID `bson:"device"`
+	CreatedBy primitive.ObjectID   `bson:"created_by,omitempty"`
+	CreatedAt time.Time            `bson:"created_at,omitempty"`
+	UpdatedAt time.Time            `bson:"updated_at,omitempty"`
 }

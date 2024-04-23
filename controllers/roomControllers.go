@@ -3,39 +3,50 @@ package controllers
 import (
 	"Aura-Server/initializers"
 	"Aura-Server/models"
+	"context"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetRoom(c *gin.Context) {
 	id := c.Param("id")
-
-	var result *gorm.DB
-
-	var room []models.Room
+	println(id)
+	var room models.Room
 
 	if id == "" {
-		result = initializers.DB.Preload("Devices.AttributeValues").Find(&room)
+		cursor, err := initializers.Database.Collection("rooms").Find(context.TODO(), bson.D{})
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Failed to read body",
+			})
+		}
+
+		var rooms []models.Room
+
+		if err = cursor.All(context.TODO(), &rooms); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Failed to parse data",
+			})
+		}
+		for _, room := range rooms {
+			res, _ := bson.MarshalExtJSON(room, false, false)
+			fmt.Println(string(res))
+		}
+		c.JSON(http.StatusOK, rooms)
+
 	} else {
-		result = initializers.DB.Preload("Devices.AttributeValues").First(&room, "id = ?", id)
-	}
+		objectId, _ := primitive.ObjectIDFromHex(id)
+		filter := bson.D{{Key: "_id", Value: objectId}}
 
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to fetch room",
-		})
+		initializers.Database.Collection("rooms").FindOne(context.TODO(), filter).Decode(&room)
 
-		return
-	}
-
-	if id == "" {
 		c.JSON(http.StatusOK, room)
-	} else {
-		c.JSON(http.StatusOK, room[0])
+
 	}
 }
 
@@ -59,11 +70,14 @@ func NewRoom(c *gin.Context) {
 	// Craete new room
 	room := models.Room{
 		Name:      body.Name,
+		Devices:   []primitive.ObjectID{},
 		CreatedBy: user.(models.User).ID,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
-	result := initializers.DB.Create(&room)
+	result, err := initializers.Database.Collection("rooms").InsertOne(context.TODO(), room)
 
-	if result.Error != nil {
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to create room",
 		})
@@ -72,14 +86,14 @@ func NewRoom(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully created new room",
-		"data":    room,
+		"data":    result,
 	})
 }
 
 func UpdateRoom(c *gin.Context) {
 	// Get the vars off req body
 	var body struct {
-		ID   uuid.UUID
+		ID   string
 		Name string
 	}
 
@@ -90,14 +104,15 @@ func UpdateRoom(c *gin.Context) {
 
 		return
 	}
-	var room models.Room = models.Room{ID: body.ID}
 
-	result := initializers.DB.Model(&room).
-		Clauses(clause.Returning{}).
-		Where("id = ?", body.ID).
-		Updates(models.Room{Name: body.Name})
+	id, _ := primitive.ObjectIDFromHex(body.ID)
+	filter := bson.D{{Key: "_id", Value: id}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "name", Value: body.Name}}}}
 
-	if result.Error != nil {
+	_, err := initializers.Database.Collection("rooms").
+		UpdateOne(context.TODO(), filter, update)
+
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to update room",
 		})
@@ -106,7 +121,6 @@ func UpdateRoom(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully updated the room",
-		"data":    room,
 	})
 }
 
@@ -124,12 +138,12 @@ func DeleteRoom(c *gin.Context) {
 		return
 	}
 
-	editResult := initializers.DB.Model(&models.Device{}).Where("room_id = ?", body.ID).
-		Updates(map[string]interface{}{"Configured": false, "RoomID": nil})
+	objectId, _ := primitive.ObjectIDFromHex(body.ID)
+	filter := bson.D{{Key: "_id", Value: objectId}}
 
-	deleteResult := initializers.DB.Where("id = ?", body.ID).Delete(&models.Room{})
+	_, err := initializers.Database.Collection("rooms").DeleteOne(context.TODO(), filter)
 
-	if editResult.Error != nil || deleteResult.Error != nil {
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to delete room",
 		})
