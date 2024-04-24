@@ -77,7 +77,6 @@ func NewRoom(c *gin.Context) {
 	// Craete new room
 	room := models.Room{
 		Name:      body.Name,
-		Devices:   []primitive.ObjectID{},
 		CreatedBy: user.(models.User).ID,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

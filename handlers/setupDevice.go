@@ -49,7 +49,7 @@ func SetupDevice(c mqtt.Client, m mqtt.Message) {
 	} else {
 		// Define new device
 		newDevice := models.Device{
-			DeviceId: setupData.DeviceId, RoomID: nil, Online: true, LastOnline: time.Now(), CreatedAt: time.Now(), UpdatedAt: time.Now(), Attributes: make(map[string]models.Attribute),
+			DeviceId: setupData.DeviceId, RoomID: nil, Online: true, Configured: false, LastOnline: time.Now(), CreatedAt: time.Now(), UpdatedAt: time.Now(), Attributes: make(map[string]models.Attribute),
 		}
 
 		// Create list of attributes to connect

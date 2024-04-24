@@ -3,39 +3,56 @@ package controllers
 import (
 	"Aura-Server/initializers"
 	"Aura-Server/models"
+	"context"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetDevice(c *gin.Context) {
 	id := c.Param("id")
 
-	var result *gorm.DB
-
-	var device []models.Device
-
 	if id == "" {
-		result = initializers.DB.Preload("AttributeValues").Find(&device)
+		cursor, err := initializers.Database.Collection("devices").Find(context.TODO(), bson.D{})
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Failed to read body",
+			})
+		}
+
+		var devices []models.Device = []models.Device{}
+
+		if err = cursor.All(context.TODO(), &devices); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Failed to parse data",
+			})
+			return
+		}
+		for _, room := range devices {
+			res, _ := bson.MarshalExtJSON(room, false, false)
+			fmt.Println(string(res))
+		}
+		c.JSON(http.StatusOK, devices)
+
 	} else {
-		result = initializers.DB.Preload("AttributeValues").First(&device, "id = ?", id)
-	}
+		var device models.Device
 
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to fetch device",
-		})
+		objectId, _ := primitive.ObjectIDFromHex(id)
+		filter := bson.D{{Key: "_id", Value: objectId}}
 
-		return
-	}
+		err := initializers.Database.Collection("devices").FindOne(context.TODO(), filter).Decode(&device)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Device cannot be found",
+			})
+			return
+		}
 
-	if id == "" {
 		c.JSON(http.StatusOK, device)
-	} else {
-		c.JSON(http.StatusOK, device[0])
 	}
 }
 
@@ -43,7 +60,7 @@ func UpdateDevice(c *gin.Context) {
 	// Get the vars off req body
 	var body struct {
 		ID     string
-		RoomID uuid.UUID
+		RoomID *primitive.ObjectID
 		Name   string
 	}
 
@@ -55,13 +72,23 @@ func UpdateDevice(c *gin.Context) {
 		return
 	}
 
-	var device models.Device
-	result := initializers.DB.Model(&device).
-		Clauses(clause.Returning{}).
-		Where("id = ?", body.ID).
-		Updates(models.Device{Name: body.Name, RoomID: body.RoomID})
+	objectId, _ := primitive.ObjectIDFromHex(body.ID)
+	filter := bson.D{{Key: "_id", Value: objectId}}
+	update := bson.D{
+		{
+			Key: "$set",
+			Value: bson.D{
+				{Key: "name", Value: body.Name},
+				{Key: "room_id", Value: body.RoomID},
+				{Key: "updated_at", Value: time.Now()},
+			},
+		},
+	}
 
-	if result.Error != nil {
+	_, err := initializers.Database.Collection("devices").
+		UpdateOne(context.TODO(), filter, update)
+
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to update device",
 		})
@@ -70,7 +97,6 @@ func UpdateDevice(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully updated the device",
-		"data":    device,
 	})
 }
 
@@ -88,9 +114,12 @@ func DeleteDevice(c *gin.Context) {
 		return
 	}
 
-	result := initializers.DB.Where("id = ?", body.ID).Delete(&models.Device{})
+	objectId, _ := primitive.ObjectIDFromHex(body.ID)
+	filter := bson.D{{Key: "_id", Value: objectId}}
 
-	if result.Error != nil {
+	_, err := initializers.Database.Collection("devices").DeleteOne(context.TODO(), filter)
+
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to delete device",
 		})
@@ -105,7 +134,7 @@ func ConfigureDevice(c *gin.Context) {
 	// Get the vars off req body
 	var body struct {
 		ID     string
-		RoomID uuid.UUID
+		RoomID *primitive.ObjectID
 		Name   string
 	}
 
@@ -117,13 +146,24 @@ func ConfigureDevice(c *gin.Context) {
 		return
 	}
 
-	var device models.Device
-	result := initializers.DB.Model(&device).
-		Clauses(clause.Returning{}).
-		Where("id = ?", body.ID).
-		Updates(models.Device{Configured: true, Name: body.Name, RoomID: body.RoomID})
+	objectId, _ := primitive.ObjectIDFromHex(body.ID)
+	filter := bson.D{{Key: "_id", Value: objectId}}
+	update := bson.D{
+		{
+			Key: "$set",
+			Value: bson.D{
+				{Key: "name", Value: body.Name},
+				{Key: "room_id", Value: body.RoomID},
+				{Key: "configured", Value: true},
+				{Key: "configured_at", Value: time.Now()},
+			},
+		},
+	}
 
-	if result.Error != nil {
+	_, err := initializers.Database.Collection("devices").
+		UpdateOne(context.TODO(), filter, update)
+
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to setup device",
 		})
@@ -132,6 +172,5 @@ func ConfigureDevice(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully setup device",
-		"data":    device,
 	})
 }

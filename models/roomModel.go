@@ -7,10 +7,9 @@ import (
 )
 
 type Room struct {
-	ID        primitive.ObjectID   `bson:"_id,omitempty"`
-	Name      string               `bson:"name,omitempty"`
-	Devices   []primitive.ObjectID `bson:"device"`
-	CreatedBy primitive.ObjectID   `bson:"created_by,omitempty"`
-	CreatedAt time.Time            `bson:"created_at,omitempty"`
-	UpdatedAt time.Time            `bson:"updated_at,omitempty"`
+	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	Name      string             `bson:"name,omitempty"`
+	CreatedBy primitive.ObjectID `bson:"created_by,omitempty"`
+	CreatedAt time.Time          `bson:"created_at,omitempty"`
+	UpdatedAt time.Time          `bson:"updated_at,omitempty"`
 }
