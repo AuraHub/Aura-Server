@@ -4,16 +4,27 @@ import (
 	"Aura-Server/initializers"
 	"Aura-Server/models"
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func SetAttributes(attributesToSet models.DeviceAttributesToSet) error {
-	objectId, _ := primitive.ObjectIDFromHex(attributesToSet.ID)
-	filter := bson.D{{Key: "_id", Value: objectId}}
+	// Send data to device
+	jsonData, _ := json.Marshal(attributesToSet.Attributes)
+
+	initializers.PahoConnection.Publish(
+		attributesToSet.DeviceId,
+		0,
+		false,
+		jsonData,
+	)
+
+	fmt.Println(attributesToSet.DeviceId)
+	filter := bson.D{{Key: "device_id", Value: attributesToSet.DeviceId}}
 
 	changes := bson.M{}
 

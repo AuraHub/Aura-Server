@@ -26,7 +26,7 @@ type Attribute struct {
 }
 
 type DeviceAttributesToSet struct {
-	ID         string
+	DeviceId   string
 	Attributes AttributeToSet
 }
 
