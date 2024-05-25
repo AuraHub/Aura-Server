@@ -15,7 +15,6 @@ type devicePing struct {
 }
 
 func PingDevices() {
-
 	// Send ping to devices
 	initializers.PahoConnection.Publish("ping", 0, false, "")
 

@@ -47,7 +47,7 @@ go get golang.org/x/net/proxy
 
 # Available attributes
 ## Devices
-* OnOff
-* Brightness
+* OnOff - (0; 255)
+* Brightness - (true/false)
 
 ## Sensors

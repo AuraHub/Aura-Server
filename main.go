@@ -39,6 +39,8 @@ func main() {
 	r.DELETE("/room", middleware.RequireAuth, controllers.DeleteRoom)
 
 	// Device routes
+	r.POST("/set/device", middleware.RequireAuth, controllers.SetDevice)
+
 	r.GET("/device", middleware.RequireAuth, controllers.GetDevice)
 	r.GET("/device/:id", middleware.RequireAuth, controllers.GetDevice)
 	r.POST("/device", middleware.RequireAuth, controllers.ConfigureDevice)

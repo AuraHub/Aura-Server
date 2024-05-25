@@ -24,3 +24,13 @@ type Attribute struct {
 	Value     string    `bson:"value"`
 	UpdatedAt time.Time `bson:"updated_at,omitempty"`
 }
+
+type DeviceAttributesToSet struct {
+	ID         string
+	Attributes AttributeToSet
+}
+
+type AttributeToSet []struct {
+	Name  string
+	Value string
+}
