@@ -5,14 +5,12 @@ import (
 	"Aura-Server/models"
 	"context"
 	"encoding/json"
-	"fmt"
-
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func SetAttributes(attributesToSet models.DeviceAttributesToSet) error {
+func ChangeAttributes(attributesToSet models.DeviceAttributesToSet) error {
 	// Send data to device
 	jsonData, _ := json.Marshal(attributesToSet.Attributes)
 
@@ -23,7 +21,6 @@ func SetAttributes(attributesToSet models.DeviceAttributesToSet) error {
 		jsonData,
 	)
 
-	fmt.Println(attributesToSet.DeviceId)
 	filter := bson.D{{Key: "device_id", Value: attributesToSet.DeviceId}}
 
 	changes := bson.M{}

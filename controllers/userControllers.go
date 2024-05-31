@@ -82,7 +82,13 @@ func Login(c *gin.Context) {
 	// Look up requested user
 	filter := bson.D{{Key: "email", Value: body.Email}}
 	var user models.User
-	initializers.Database.Collection("users").FindOne(context.TODO(), filter).Decode(&user)
+	err := initializers.Database.Collection("users").FindOne(context.TODO(), filter).Decode(&user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid email or password",
+		})
+		return
+	}
 
 	if user.Email == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -92,9 +98,9 @@ func Login(c *gin.Context) {
 	}
 
 	// Compare sent in pass with saved user pass hash
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
+	err1 := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 
-	if err != nil {
+	if err1 != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid email or password",
 		})

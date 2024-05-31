@@ -48,7 +48,7 @@ func main() {
 	r.DELETE("/device", middleware.RequireAuth, controllers.DeleteDevice)
 
 	// Subscribes to MQTT topics
-	initializers.PahoConnection.Subscribe("setup", 0, handlers.SetupDevice)
+	initializers.PahoConnection.Subscribe("setupDevice", 0, handlers.SetupDevice)
 	initializers.PahoConnection.Subscribe("returnPing", 0, handlers.ReturnedPing)
 
 	ticker := time.NewTicker(25 * time.Second)

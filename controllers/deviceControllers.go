@@ -188,7 +188,7 @@ func SetDevice(c *gin.Context) {
 		return
 	}
 
-	err := handlers.SetAttributes(body)
+	err := handlers.ChangeAttributes(body)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

@@ -33,7 +33,10 @@ func PingDevices() {
 	}
 
 	// Remove devices which didn't respond
-	initializers.Database.Collection("devices").UpdateMany(context.TODO(), filter, update)
+	_, err := initializers.Database.Collection("devices").UpdateMany(context.TODO(), filter, update)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func ReturnedPing(c mqtt.Client, m mqtt.Message) {
@@ -54,5 +57,8 @@ func ReturnedPing(c mqtt.Client, m mqtt.Message) {
 		},
 	}
 
-	initializers.Database.Collection("devices").UpdateOne(context.TODO(), filter, update)
+	_, err1 := initializers.Database.Collection("devices").UpdateOne(context.TODO(), filter, update)
+	if err1 != nil {
+		panic(err1)
+	}
 }
