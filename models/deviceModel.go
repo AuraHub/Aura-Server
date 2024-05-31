@@ -27,10 +27,10 @@ type Attribute struct {
 
 type DeviceAttributesToSet struct {
 	DeviceId   string
-	Attributes AttributeToSet
+	Attributes []AttributeToSet
 }
 
-type AttributeToSet []struct {
+type AttributeToSet struct {
 	Name  string
 	Value string
 }

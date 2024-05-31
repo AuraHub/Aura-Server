@@ -25,7 +25,7 @@ func GetDevice(c *gin.Context) {
 			})
 		}
 
-		var devices []models.Device = []models.Device{}
+		var devices []models.Device
 
 		if err = cursor.All(context.TODO(), &devices); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{

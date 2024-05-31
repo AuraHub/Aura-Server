@@ -11,15 +11,7 @@ import (
 )
 
 func ChangeAttributes(attributesToSet models.DeviceAttributesToSet) error {
-	// Send data to device
-	jsonData, _ := json.Marshal(attributesToSet.Attributes)
-
-	initializers.PahoConnection.Publish(
-		attributesToSet.DeviceId,
-		0,
-		false,
-		jsonData,
-	)
+	SendAttributes(attributesToSet)
 
 	filter := bson.D{{Key: "device_id", Value: attributesToSet.DeviceId}}
 
@@ -35,4 +27,17 @@ func ChangeAttributes(attributesToSet models.DeviceAttributesToSet) error {
 	_, err := initializers.Database.Collection("devices").
 		UpdateOne(context.TODO(), filter, update)
 	return err
+}
+
+func SendAttributes(attributesToSet models.DeviceAttributesToSet) {
+	// Send data to device
+	jsonData, _ := json.Marshal(attributesToSet.Attributes)
+
+	initializers.PahoConnection.Publish(
+		attributesToSet.DeviceId,
+		0,
+		false,
+		jsonData,
+	)
+
 }

@@ -5,6 +5,7 @@ import (
 	"Aura-Server/models"
 	"context"
 	"encoding/json"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -17,7 +18,6 @@ type deviceSetup struct {
 }
 
 func SetupDevice(c mqtt.Client, m mqtt.Message) {
-
 	// Convert data to JSON
 	var setupData deviceSetup
 
@@ -30,7 +30,10 @@ func SetupDevice(c mqtt.Client, m mqtt.Message) {
 	var device models.Device
 
 	filter := bson.D{{Key: "device_id", Value: setupData.DeviceId}}
-	initializers.Database.Collection("devices").FindOne(context.TODO(), filter).Decode(&device)
+	err1 := initializers.Database.Collection("devices").FindOne(context.TODO(), filter).Decode(&device)
+	if err1 != nil {
+		panic(err1)
+	}
 
 	if device.DeviceId != "" {
 		// Update online state
@@ -44,7 +47,25 @@ func SetupDevice(c mqtt.Client, m mqtt.Message) {
 			},
 		}
 
-		initializers.Database.Collection("devices").UpdateOne(context.TODO(), filter, update)
+		opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+
+		result := initializers.Database.Collection("devices").FindOneAndUpdate(context.TODO(), filter, update, opts)
+		var updatedDocument models.Device
+		err = result.Decode(&updatedDocument)
+
+		var output []models.AttributeToSet
+		for name, attribute := range updatedDocument.Attributes {
+			output = append(output, models.AttributeToSet{
+				Name:  name,
+				Value: attribute.Value,
+			})
+		}
+
+		attributes := models.DeviceAttributesToSet{
+			DeviceId:   updatedDocument.DeviceId,
+			Attributes: output,
+		}
+		SendAttributes(attributes)
 
 	} else {
 		// Define new device
