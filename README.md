@@ -53,7 +53,7 @@ go get golang.org/x/net/proxy
 ## Triggers
 * Button
   * Click
-  * Double Click
+  * DoubleClick
   * Hold
 * Movement sensor
 * Switch

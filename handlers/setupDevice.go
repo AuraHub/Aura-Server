@@ -5,7 +5,6 @@ import (
 	"Aura-Server/models"
 	"context"
 	"encoding/json"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -33,29 +32,22 @@ func SetupDevice(c mqtt.Client, m mqtt.Message) {
 	var device models.Device
 
 	filter := bson.D{{Key: "device_id", Value: setupData.DeviceId}}
-	noDeviceInDB := initializers.Database.Collection("devices").FindOne(context.TODO(), filter).Decode(&device)
+	update := bson.D{
+		{
+			Key: "$set",
+			Value: bson.D{
+				{Key: "online", Value: true},
+				{Key: "last_online", Value: time.Now()},
+			},
+		},
+	}
+	noDeviceInDB := initializers.Database.Collection("devices").FindOneAndUpdate(context.TODO(), filter, update).Decode(&device)
 
 	// Check if exists
 	if noDeviceInDB == nil {
 		// If exists in database -> update online state
-		update := bson.D{
-			{
-				Key: "$set",
-				Value: bson.D{
-					{Key: "online", Value: true},
-					{Key: "last_online", Value: time.Now()},
-				},
-			},
-		}
-
-		opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-
-		result := initializers.Database.Collection("devices").FindOneAndUpdate(context.TODO(), filter, update, opts)
-		var updatedDocument models.Device
-		err = result.Decode(&updatedDocument)
-
 		var output []models.AttributeToSet
-		for name, attribute := range updatedDocument.Attributes {
+		for name, attribute := range device.Attributes {
 			output = append(output, models.AttributeToSet{
 				Name:  name,
 				Value: attribute.Value,
@@ -63,7 +55,7 @@ func SetupDevice(c mqtt.Client, m mqtt.Message) {
 		}
 
 		attributes := models.DeviceAttributesToSet{
-			DeviceId:   updatedDocument.DeviceId,
+			DeviceId:   device.DeviceId,
 			Attributes: output,
 		}
 		SendAttributes(attributes)
@@ -77,7 +69,6 @@ func SetupDevice(c mqtt.Client, m mqtt.Message) {
 		// Create list of attributes to connect
 		for _, newAttributeName := range setupData.Attributes {
 			newDevice.Attributes[newAttributeName] = models.Attribute{
-				UpdatedAt:     time.Now(),
 				AttributeType: AttributesTypes[newAttributeName],
 			}
 		}

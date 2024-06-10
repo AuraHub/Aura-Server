@@ -14,7 +14,7 @@ type Device struct {
 	Online       bool                 `bson:"online,omitempty"`
 	LastOnline   time.Time            `bson:"last_online,omitempty"`
 	Attributes   map[string]Attribute `bson:"attributes"`
-	Configured   bool                 `bson:"configured,omitempty"`
+	Configured   bool                 `bson:"configured"`
 	ConfiguredAt time.Time            `bson:"configured_at,omitempty"`
 	CreatedAt    time.Time            `bson:"created_at,omitempty"`
 	UpdatedAt    time.Time            `bson:"updated_at,omitempty"`
