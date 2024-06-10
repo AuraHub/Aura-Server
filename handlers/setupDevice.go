@@ -18,6 +18,9 @@ type deviceSetup struct {
 }
 
 func SetupDevice(c mqtt.Client, m mqtt.Message) {
+	// Define AttributesTypes
+	AttributesTypes := map[string]string{"OnOff": "bool", "Brightness": "value"}
+
 	// Convert data to JSON
 	var setupData deviceSetup
 
@@ -30,13 +33,11 @@ func SetupDevice(c mqtt.Client, m mqtt.Message) {
 	var device models.Device
 
 	filter := bson.D{{Key: "device_id", Value: setupData.DeviceId}}
-	err1 := initializers.Database.Collection("devices").FindOne(context.TODO(), filter).Decode(&device)
-	if err1 != nil {
-		panic(err1)
-	}
+	noDeviceInDB := initializers.Database.Collection("devices").FindOne(context.TODO(), filter).Decode(&device)
 
-	if device.DeviceId != "" {
-		// Update online state
+	// Check if exists
+	if noDeviceInDB == nil {
+		// If exists in database -> update online state
 		update := bson.D{
 			{
 				Key: "$set",
@@ -68,7 +69,7 @@ func SetupDevice(c mqtt.Client, m mqtt.Message) {
 		SendAttributes(attributes)
 
 	} else {
-		// Define new device
+		// If not exists -> Define new device
 		newDevice := models.Device{
 			DeviceId: setupData.DeviceId, RoomID: nil, Online: true, Configured: false, LastOnline: time.Now(), CreatedAt: time.Now(), UpdatedAt: time.Now(), Attributes: make(map[string]models.Attribute),
 		}
@@ -76,7 +77,8 @@ func SetupDevice(c mqtt.Client, m mqtt.Message) {
 		// Create list of attributes to connect
 		for _, newAttributeName := range setupData.Attributes {
 			newDevice.Attributes[newAttributeName] = models.Attribute{
-				UpdatedAt: time.Now(),
+				UpdatedAt:     time.Now(),
+				AttributeType: AttributesTypes[newAttributeName],
 			}
 		}
 

@@ -11,7 +11,7 @@ go get -u github.com/gin-gonic/gin
 ```bash
 go get go.mongodb.org/mongo-driver/mongo
 ```
-#### 3. CompileDeamon
+#### 3. Compile Daemon
 ```bash
 go get github.com/githubnemo/CompileDaemon
 ```
@@ -47,7 +47,19 @@ go get golang.org/x/net/proxy
 
 # Available attributes
 ## Devices
-* OnOff - (0; 255)
-* Brightness - (true/false)
+* OnOff - (0; 255) - "bool"
+* Brightness - (true/false) - "value"
+
+## Triggers
+* Button
+  * Click
+  * Double Click
+  * Hold
+* Movement sensor
+* Switch
+
+### Actions
+* Set value
+* Switch
 
 ## Sensors

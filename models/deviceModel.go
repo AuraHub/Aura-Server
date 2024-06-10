@@ -21,8 +21,9 @@ type Device struct {
 }
 
 type Attribute struct {
-	Value     string    `bson:"value"`
-	UpdatedAt time.Time `bson:"updated_at,omitempty"`
+	Value         string    `bson:"value"`
+	UpdatedAt     time.Time `bson:"updated_at,omitempty"`
+	AttributeType string    `bson:"attribute_type,omitempty"`
 }
 
 type DeviceAttributesToSet struct {
