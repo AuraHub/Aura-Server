@@ -14,7 +14,7 @@ type devicePing struct {
 	DeviceId string `json:"deviceId"`
 }
 
-func PingDevices() {
+func Ping() {
 	// Send ping to devices
 	initializers.PahoConnection.Publish("ping", 0, false, "")
 
@@ -33,10 +33,9 @@ func PingDevices() {
 	}
 
 	// Remove devices which didn't respond
-	_, err := initializers.Database.Collection("devices").UpdateMany(context.TODO(), filter, update)
-	if err != nil {
-		panic(err)
-	}
+	_, _ = initializers.Database.Collection("devices").UpdateMany(context.TODO(), filter, update)
+	_, _ = initializers.Database.Collection("deviceTriggers").UpdateMany(context.TODO(), filter, update)
+
 }
 
 func ReturnedPing(c mqtt.Client, m mqtt.Message) {
@@ -49,7 +48,8 @@ func ReturnedPing(c mqtt.Client, m mqtt.Message) {
 	}
 
 	// Update status to online
-	filter := bson.D{{Key: "device_id", Value: pingData.DeviceId}}
+	deviceFilter := bson.D{{Key: "device_id", Value: pingData.DeviceId}}
+	deviceTriggerFilter := bson.D{{Key: "device_trigger_id", Value: pingData.DeviceId}}
 	update := bson.D{
 		{
 			Key:   "$set",
@@ -57,8 +57,6 @@ func ReturnedPing(c mqtt.Client, m mqtt.Message) {
 		},
 	}
 
-	_, err1 := initializers.Database.Collection("devices").UpdateOne(context.TODO(), filter, update)
-	if err1 != nil {
-		panic(err1)
-	}
+	_, _ = initializers.Database.Collection("devices").UpdateOne(context.TODO(), deviceFilter, update)
+	_, _ = initializers.Database.Collection("deviceTriggers").UpdateOne(context.TODO(), deviceTriggerFilter, update)
 }

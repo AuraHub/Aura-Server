@@ -49,6 +49,7 @@ func main() {
 
 	// Subscribes to MQTT topics
 	initializers.PahoConnection.Subscribe("setupDevice", 0, handlers.SetupDevice)
+	initializers.PahoConnection.Subscribe("setupDeviceTrigger", 0, handlers.SetupDeviceTrigger)
 	initializers.PahoConnection.Subscribe("returnPing", 0, handlers.ReturnedPing)
 
 	ticker := time.NewTicker(25 * time.Second)
@@ -58,7 +59,7 @@ func main() {
 			select {
 			case <-ticker.C:
 
-				handlers.PingDevices()
+				handlers.Ping()
 
 			case <-quit:
 				ticker.Stop()
