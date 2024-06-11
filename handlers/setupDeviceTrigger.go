@@ -12,8 +12,8 @@ import (
 )
 
 type deviceTriggerSetup struct {
-	DeviceTriggerId string   `json:"deviceTriggerId"`
-	Triggers        []string `json:"triggers"`
+	DeviceId string   `json:"deviceId"`
+	Triggers []string `json:"triggers"`
 }
 
 func SetupDeviceTrigger(c mqtt.Client, m mqtt.Message) {
@@ -28,7 +28,7 @@ func SetupDeviceTrigger(c mqtt.Client, m mqtt.Message) {
 	// Check if device exists in database
 	var deviceTrigger models.DeviceTrigger
 
-	filter := bson.D{{Key: "device_trigger_id", Value: setupData.DeviceTriggerId}}
+	filter := bson.D{{Key: "device_id", Value: setupData.DeviceId}}
 	update := bson.D{
 		{
 			Key: "$set",
@@ -45,7 +45,7 @@ func SetupDeviceTrigger(c mqtt.Client, m mqtt.Message) {
 	if noDeviceTriggerInDB != nil {
 		// If not exists -> Define new device
 		newDeviceTrigger := models.DeviceTrigger{
-			DeviceTriggerId: setupData.DeviceTriggerId, RoomID: nil, Online: true, Configured: false, LastOnline: time.Now(), CreatedAt: time.Now(), UpdatedAt: time.Now(), Triggers: make(map[string]models.Trigger),
+			DeviceId: setupData.DeviceId, RoomID: nil, Online: true, Configured: false, LastOnline: time.Now(), CreatedAt: time.Now(), UpdatedAt: time.Now(), Triggers: make(map[string]models.Trigger),
 		}
 
 		// Create list of attributes to connect

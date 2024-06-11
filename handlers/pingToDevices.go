@@ -48,8 +48,7 @@ func ReturnedPing(c mqtt.Client, m mqtt.Message) {
 	}
 
 	// Update status to online
-	deviceFilter := bson.D{{Key: "device_id", Value: pingData.DeviceId}}
-	deviceTriggerFilter := bson.D{{Key: "device_trigger_id", Value: pingData.DeviceId}}
+	filter := bson.D{{Key: "device_id", Value: pingData.DeviceId}}
 	update := bson.D{
 		{
 			Key:   "$set",
@@ -57,6 +56,6 @@ func ReturnedPing(c mqtt.Client, m mqtt.Message) {
 		},
 	}
 
-	_, _ = initializers.Database.Collection("devices").UpdateOne(context.TODO(), deviceFilter, update)
-	_, _ = initializers.Database.Collection("deviceTriggers").UpdateOne(context.TODO(), deviceTriggerFilter, update)
+	_, _ = initializers.Database.Collection("devices").UpdateOne(context.TODO(), filter, update)
+	_, _ = initializers.Database.Collection("deviceTriggers").UpdateOne(context.TODO(), filter, update)
 }
