@@ -47,6 +47,13 @@ func main() {
 	r.PUT("/device", middleware.RequireAuth, controllers.UpdateDevice)
 	r.DELETE("/device", middleware.RequireAuth, controllers.DeleteDevice)
 
+	// Device trigger routes
+	r.GET("/trigger", middleware.RequireAuth, controllers.GetTrigger)
+	r.GET("/trigger/:id", middleware.RequireAuth, controllers.GetTrigger)
+	r.POST("/trigger", middleware.RequireAuth, controllers.ConfigureTrigger)
+	r.PUT("/trigger", middleware.RequireAuth, controllers.UpdateTrigger)
+	r.DELETE("/trigger", middleware.RequireAuth, controllers.DeleteTrigger)
+
 	// Subscribes to MQTT topics
 	initializers.PahoConnection.Subscribe("setupDevice", 0, handlers.SetupDevice)
 	initializers.PahoConnection.Subscribe("setupDeviceTrigger", 0, handlers.SetupDeviceTrigger)
@@ -68,5 +75,8 @@ func main() {
 		}
 	}()
 
-	r.Run(":3000")
+	err := r.Run(":3000")
+	if err != nil {
+		return
+	}
 }
