@@ -25,9 +25,10 @@ type Trigger struct {
 }
 
 type Action struct {
-	DeviceId string `bson:"device_id,omitempty"`
-	Action   string `bson:"action,omitempty"`
-	Value    string `bson:"value"`
+	DeviceId  string `bson:"device_id,omitempty"`
+	Action    string `bson:"action,omitempty"`
+	Attribute string `bson:"attribute,omitempty"`
+	Value     string `bson:"value"`
 }
 
 type DeviceTriggersToSet struct {

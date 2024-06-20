@@ -50,21 +50,25 @@ func SetDeviceTrigger(c *gin.Context) {
 
 	filter := bson.D{{Key: "device_id", Value: body.DeviceId}}
 
-	changes := bson.M{}
-
+	updates := bson.M{}
 	for _, trigger := range body.Triggers {
-		var actionsToAdd []models.Action
-		for _, change := range trigger.Actions {
-			actionsToAdd = append(actionsToAdd, models.Action{
-				DeviceId: change.DeviceId,
-				Action:   change.Action,
-				Value:    change.Value,
-			})
+		var actionsToAdd []interface{}
+		for _, action := range trigger.Actions {
+			actionToAdd := bson.M{
+				"device_id": action.DeviceId,
+				"action":    action.Action,
+				"attribute": action.Attribute,
+			}
+			if action.Value != "" {
+				actionToAdd["value"] = action.Value
+			}
+			actionsToAdd = append(actionsToAdd, actionToAdd)
 		}
-		changes["triggers."+trigger.Trigger+".actions"] = actionsToAdd
+		// Use $push with $each to add new actions to the existing array
+		updates["triggers."+trigger.Trigger+".actions"] = actionsToAdd
 	}
 
-	update := bson.D{{Key: "$set", Value: changes}}
+	update := bson.D{{Key: "$set", Value: updates}}
 
 	_, err := initializers.Database.Collection("deviceTriggers").
 		UpdateOne(context.TODO(), filter, update)
