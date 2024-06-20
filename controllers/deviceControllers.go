@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"Aura-Server/handlers"
 	"Aura-Server/initializers"
 	"Aura-Server/models"
 	"context"
@@ -173,31 +172,5 @@ func ConfigureDevice(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully setup device",
-	})
-}
-
-func SetDevice(c *gin.Context) {
-	// Get the vars off req body
-	var body models.DeviceAttributesToSet
-
-	if c.Bind(&body) != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to read body",
-		})
-
-		return
-	}
-
-	err := handlers.ChangeAttributes(body)
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to update device",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully set device",
 	})
 }

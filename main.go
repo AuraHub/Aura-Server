@@ -40,6 +40,7 @@ func main() {
 
 	// Device routes
 	r.POST("/set/device", middleware.RequireAuth, controllers.SetDevice)
+	r.POST("/set/trigger", middleware.RequireAuth, controllers.SetDeviceTrigger)
 
 	r.GET("/device", middleware.RequireAuth, controllers.GetDevice)
 	r.GET("/device/:id", middleware.RequireAuth, controllers.GetDevice)

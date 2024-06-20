@@ -29,3 +29,13 @@ type Action struct {
 	Action   string `bson:"action,omitempty"`
 	Value    string `bson:"value"`
 }
+
+type DeviceTriggersToSet struct {
+	DeviceId string
+	Triggers []TriggerToSet
+}
+
+type TriggerToSet struct {
+	Trigger string   `bson:"trigger"`
+	Actions []Action `bson:"action"`
+}
