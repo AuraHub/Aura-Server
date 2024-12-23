@@ -4,7 +4,6 @@ import (
 	"Aura-Server/initializers"
 	"Aura-Server/models"
 	"context"
-	"encoding/json"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -31,13 +30,12 @@ func ChangeAttributes(attributesToSet models.DeviceAttributesToSet) error {
 
 func SendAttributes(attributesToSet models.DeviceAttributesToSet) {
 	// Send data to device
-	jsonData, _ := json.Marshal(attributesToSet.Attributes)
-
-	initializers.PahoConnection.Publish(
-		attributesToSet.DeviceId,
-		0,
-		false,
-		jsonData,
-	)
-
+	for _, attribute := range attributesToSet.Attributes {
+		initializers.PahoConnection.Publish(
+			attributesToSet.DeviceId+"|"+attribute.Name,
+			0,
+			false,
+			attribute.Value,
+		)
+	}
 }

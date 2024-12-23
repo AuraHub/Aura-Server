@@ -19,14 +19,12 @@ func Ping() {
 	initializers.PahoConnection.Publish("ping", 0, false, "")
 
 	// Wait 3 seconds
+	threeSecondsAgo := time.Now()
 	time.Sleep(3 * time.Second)
-
-	// Calculate the timestamp 3 seconds ago
-	fiveSecondsAgo := time.Now().Add(-3 * time.Second)
 
 	filter := bson.D{
 		{Key: "online", Value: true},
-		{Key: "last_online", Value: bson.D{{Key: "$lte", Value: fiveSecondsAgo}}},
+		{Key: "last_online", Value: bson.D{{Key: "$lte", Value: threeSecondsAgo}}},
 	}
 	update := bson.D{
 		{Key: "$set", Value: bson.D{{Key: "online", Value: false}}},
@@ -35,7 +33,6 @@ func Ping() {
 	// Remove devices which didn't respond
 	_, _ = initializers.Database.Collection("devices").UpdateMany(context.TODO(), filter, update)
 	_, _ = initializers.Database.Collection("deviceTriggers").UpdateMany(context.TODO(), filter, update)
-
 }
 
 func ReturnedPing(c mqtt.Client, m mqtt.Message) {
