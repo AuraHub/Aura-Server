@@ -17,12 +17,11 @@ var (
 )
 
 func ConnectToDB() {
-	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	dsn := os.Getenv("DB_CREDENTIALS")
+	dbName := os.Getenv("DB_NAME")
 
 	opts := options.Client().
-		ApplyURI(dsn).
-		SetServerAPIOptions(serverAPI)
+		ApplyURI(dsn)
 
 	var err error
 	Client, err = mongo.Connect(context.TODO(), opts)
@@ -30,10 +29,10 @@ func ConnectToDB() {
 		panic(err)
 	}
 
-	Database = Client.Database("AVA-DB")
+	Database = Client.Database(dbName)
 
 	var result bson.M
-	if err := Client.Database("admin").RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Decode(&result); err != nil {
+	if err := Client.Database(dbName).RunCommand(context.TODO(), bson.D{{Key: "ping", Value: 1}}).Decode(&result); err != nil {
 		panic(err)
 	}
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")

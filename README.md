@@ -40,10 +40,6 @@ go get golang.org/x/net/proxy
 ```
 
 ---
-## Command to run Gorm server
-```bash
-~/go/bin/CompileDaemon -command="./Aura-Server"
-```
 
 # Available attributes
 ## Devices
@@ -59,7 +55,7 @@ go get golang.org/x/net/proxy
 * Switch
 
 ### Actions
-* Set value
-* Switch
+* Set value - "set"
+* Switch - "switch"
 
 ## Sensors
