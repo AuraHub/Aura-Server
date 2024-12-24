@@ -58,6 +58,7 @@ func main() {
 	// Subscribes to MQTT topics
 	initializers.PahoConnection.Subscribe("setupDevice", 0, handlers.SetupDevice)
 	initializers.PahoConnection.Subscribe("setupDeviceTrigger", 0, handlers.SetupDeviceTrigger)
+	initializers.PahoConnection.Subscribe("trigger", 0, handlers.OnDeviceTrigger)
 	initializers.PahoConnection.Subscribe("returnPing", 0, handlers.ReturnedPing)
 
 	ticker := time.NewTicker(25 * time.Second)
