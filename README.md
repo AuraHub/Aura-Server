@@ -55,6 +55,12 @@ go get github.com/gorilla/websocket
 go get golang.org/x/net/proxy
 ```
 
+#### 9. Cors
+
+```bash
+go get github.com/gin-contrib/cors
+```
+
 ---
 
 # Available attributes
