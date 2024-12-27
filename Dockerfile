@@ -14,7 +14,7 @@ RUN go mod tidy && go mod download
 COPY . .
 
 # Step 6: Build the application
-RUN go build -o main .
+RUN go build -o main.go .
 
 # Step 7: Use a minimal image for the final container
 FROM alpine:latest
@@ -29,7 +29,7 @@ WORKDIR /root/
 COPY --from=builder /app/main .
 
 # Step 11: Expose port 8080
-EXPOSE 8080
+EXPOSE 3000
 
 # Step 12: Run the binary
 CMD ["./main"]
