@@ -1,5 +1,5 @@
 # Step 1: Use an official Golang image as a builder
-FROM golang:1.20 as builder
+FROM golang:1.23 as builder
 
 # Step 2: Set the working directory in the container
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 
 # Step 4: Download dependencies
-RUN go mod download
+RUN go mod tidy && go mod download
 
 # Step 5: Copy the source code
 COPY . .
