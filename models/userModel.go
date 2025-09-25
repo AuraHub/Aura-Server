@@ -14,4 +14,5 @@ type User struct {
 	Password  string             `bson:"password,omitempty"`
 	CreatedAt time.Time          `bson:"created_at,omitempty"`
 	UpdatedAt time.Time          `bson:"updated_at,omitempty"`
+	Room      primitive.ObjectID `bson:"room,omitempty"`
 }
